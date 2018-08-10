@@ -2,11 +2,9 @@ package com.admin.servicePortal.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
 
 import com.admin.servicePortal.model.Account;
 import com.admin.servicePortal.model.Activity;
-import com.admin.servicePortal.model.Contact;
 import com.admin.servicePortal.model.Service;
 import com.admin.servicePortal.model.User;
 
@@ -28,8 +26,6 @@ public interface AdminService {
 	public int updateCustomer(Account account);
 
 	public int deleteCustomer(String id);
-
-	public int addContact(Contact contact);
 
 	public int addService(Service service);
 

@@ -17,7 +17,6 @@ public class LoginRowMapper implements RowMapper<User> {
 		user.setEmail(rs.getString("Mail"));
 		user.setPassword(rs.getString("Password"));
 		user.setEducation(rs.getString("Education"));
-
 		return user;
 	}
 

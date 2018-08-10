@@ -16,7 +16,6 @@ public class ServiceRowMapper implements RowMapper<Service> {
 		service.setId(rs.getString("ID"));
 		service.setTitle(rs.getString("Title"));
 		service.setAccountid(rs.getString("AccountId"));
-		service.setContactid(rs.getString("ContactId"));
 		service.setStatus(rs.getString("Status"));
 		service.setOpendate(rs.getTimestamp("Opendate"));
 		service.setClosedate(rs.getTimestamp("CloseDate"));

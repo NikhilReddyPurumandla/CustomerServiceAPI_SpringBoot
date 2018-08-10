@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.admin.servicePortal.model.Account;
 import com.admin.servicePortal.model.Activity;
-import com.admin.servicePortal.model.Contact;
 import com.admin.servicePortal.model.Service;
 import com.admin.servicePortal.model.User;
 import com.admin.servicePortal.service.AdminService;
@@ -24,7 +23,6 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public int addUser(User user) {
 		// TODO Auto-generated method stub
-		System.out.println(user.getEmail()+":"+user.getPassword());
 		return serviceDAO.addUser(user);
 	}
 
@@ -68,12 +66,6 @@ public class AdminServiceImpl implements AdminService {
 	public int deleteCustomer(String id) {
 		// TODO Auto-generated method stub
 		return serviceDAO.deleteCustomer(id);
-	}
-
-	@Override
-	public int addContact(Contact contact) {
-		// TODO Auto-generated method stub
-		return serviceDAO.addContact(contact);
 	}
 
 	@Override

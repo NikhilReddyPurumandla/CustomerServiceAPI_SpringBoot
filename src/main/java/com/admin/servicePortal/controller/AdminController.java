@@ -31,6 +31,7 @@ AdminService adminService;
 @CrossOrigin
 @RequestMapping(value = "/user", method = RequestMethod.POST, consumes = { "application/json" })
 public int addUser(@RequestBody User user) {
+	
 	return adminService.addUser(user) ;
 }
 
@@ -42,25 +43,18 @@ public List<User> getUser(@PathVariable("email") String email) {
 }
 
 @CrossOrigin
-@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = { "application/json" })
-public Boolean getLogin(@RequestBody User user) {
-	System.out.println(user.getEmail()+":"+user.getPassword());
-	return adminService.loginUser(user);
-	
-}
-
-@CrossOrigin
 @RequestMapping(value = "/getLogin", method = RequestMethod.POST, consumes = { "application/json" })	
 public  ResponseEntity<String> login( @RequestBody User user, HttpServletResponse response) {
     System.out.println(user.getEmail()+":"+user.getPassword());
 	if (adminService.loginUser(user) == true) {
 		String uuid = UUID.randomUUID().toString();
         response.addCookie(new Cookie("x-auth-token", uuid));
+        System.out.println("uuid "+uuid);
         return new ResponseEntity<String>(uuid,HttpStatus.OK);    
 
 	}
 	else{
-		return new ResponseEntity<String>("error",HttpStatus.OK);    
+		return new ResponseEntity<String>("error",HttpStatus.NOT_FOUND);    
 	}
 }
 }

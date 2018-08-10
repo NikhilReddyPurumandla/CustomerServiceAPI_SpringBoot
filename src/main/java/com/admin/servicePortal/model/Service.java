@@ -6,7 +6,6 @@ public class Service {
 	String id;
 	String title;
 	String accountid;
-	String contactid;
 	String status;
 	Timestamp opendate;
 	Timestamp closedate;
@@ -34,14 +33,6 @@ public class Service {
 
 	public void setAccountid(String accountid) {
 		this.accountid = accountid;
-	}
-
-	public String getContactid() {
-		return contactid;
-	}
-
-	public void setContactid(String contactid) {
-		this.contactid = contactid;
 	}
 
 	public String getStatus() {

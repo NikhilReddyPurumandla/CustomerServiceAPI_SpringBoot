@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import com.admin.servicePortal.dao.ServiceDAO;
 import com.admin.servicePortal.model.Account;
 import com.admin.servicePortal.model.Activity;
-import com.admin.servicePortal.model.Contact;
 import com.admin.servicePortal.model.Service;
 import com.admin.servicePortal.model.User;
 import com.admin.servicePortal.util.AccountRowMapper;
@@ -29,9 +28,11 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Autowired
 	NamedParameterJdbcTemplate jdbcTemplate;
 
+	String CustomerId;
+
 	@Override
 	public int addUser(User user) {
-		System.out.println(user.getEmail()+":"+user.getPassword());
+		System.out.println(user.getEmail() + ":" + user.getPassword());
 
 		// TODO Auto-generated method stub
 		String query = "insert into User values(:name,:dob,:gender,:email,:password,:education)";
@@ -49,27 +50,28 @@ public class ServiceDAOImpl implements ServiceDAO {
 
 	public Boolean login(User user) {
 
-		String query = "select * from User where Mail=:user and password=:pass";
+		String query = "select * from User where Mail=:user and Password=:pass";
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("user", user.getEmail());
 		map.put("pass", user.getPassword());
 		List<User> users = jdbcTemplate.query(query, map, new LoginRowMapper());
-		System.out.println(query);
-		System.out.println(users.size());
+		System.out.println("Is list empty " + users.isEmpty());
 		return users.isEmpty() ? false : true;
+
 	}
 
 	@Override
 	public List<User> getUser(String mail) {
 		// TODO Auto-generated method stub
-		String query = "select * from User where Mail=" + mail;
+		String query = "select * from User where Mail='" + mail + "'";
 		return jdbc.query(query, new LoginRowMapper());
 	}
 
 	@Override
 	public int addCustomer(Account account) {
 		// TODO Auto-generated method stub
-		String query = "insert into Account values(:id,:name,:houseNo,:street,:city,:state,:zipCode,:role,:email)";
+
+		String query = "insert into Account values(:id,:name,:houseNo,:street,:city,:state,:zipCode,:role,:email,:phone)";
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("id", account.getId());
 		map.put("name", account.getName());
@@ -78,8 +80,10 @@ public class ServiceDAOImpl implements ServiceDAO {
 		map.put("city", account.getCity());
 		map.put("state", account.getState());
 		map.put("zipCode", account.getZipCode());
-		map.put("role", account.getRole());
+		map.put("role", "USER");
 		map.put("email", account.getEmail());
+		map.put("phone", account.getPhone());
+		this.CustomerId = account.getId();
 
 		return jdbcTemplate.update(query, map);
 	}
@@ -87,9 +91,9 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Override
 	public Account getCustomer(int id) {
 		// TODO Auto-generated method stub
-		String query = "select * from Account where id=" + id;
-
-		return (Account) jdbc.query(query, new AccountRowMapper());
+		String query = "select * from Account where AccountId=" + id;
+		List<Account> acc = jdbc.query(query, new AccountRowMapper());
+		return acc.get(0);
 	}
 
 	@Override
@@ -103,18 +107,16 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Override
 	public int updateCustomer(Account account) {
 		// TODO Auto-generated method stub
-		String query = "update Account set Name=:name,HouseNo=:dob,Street=:street,city=:city,State=:state,ZipCode=:zipcode,Role=:role,Email=:email where AccountId=:id";
+		String query = "update Account set HouseNo=:houseNo,Street=:street,city=:city,State=:state,Email=:email,Phone=:phone where AccountId=:id";
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("id", account.getId());
-		map.put("name", account.getName());
 		map.put("houseNo", account.getHouseNo());
 		map.put("street", account.getStreet());
 		map.put("city", account.getCity());
 		map.put("state", account.getState());
-		map.put("zipCode", account.getZipCode());
-		map.put("role", account.getRole());
 		map.put("email", account.getEmail());
+		map.put("phone", account.getPhone());
 
 		return jdbcTemplate.update(query, map);
 	}
@@ -122,50 +124,36 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Override
 	public int deleteCustomer(String id) {
 		// TODO Auto-generated method stub
-		String query = "delete from Account where id=?";
+		System.out.println("delete dao customer id: " + id);
+		String query = "delete from Account where AccountId=?";
 
 		return jdbc.update(query, id);
 	}
 
 	@Override
-	public int addContact(Contact contact) {
-		// TODO Auto-generated method stub
-		String query = "insert into Contact values(:ContactId,:AccountId,:LastName,:FirstName,:Phone,:Email)";
-
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("ContactId", contact.getContactId());
-		map.put("AccountId", contact.getAccountId());
-		map.put("LastName", contact.getLname());
-		map.put("FirstName", contact.getFname());
-		map.put("Phone", contact.getPhone());
-		map.put("Email", contact.getEmail());
-
-		return jdbcTemplate.update(query, map);
-	}
-
-	@Override
 	public int addService(Service service) {
 		// TODO Auto-generated method stub
-		String query = "insert into ServiceRequest values(:ID,:Title,:AccountId,:ContactId,:Status,:Opendate,:CloseDate,:Description)";
-
+		String query = "insert into ServiceRequest values(:ID,:Title,:AccountId,:Status,:Opendate,:CloseDate,:Description)";
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		Timestamp openDate = timestamp;
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ID", service.getId());
 		map.put("Title", service.getTitle());
 		map.put("AccountId", service.getAccountid());
-		map.put("ContactId", service.getContactid());
-		map.put("Status", service.getStatus());
-		map.put("Opendate", service.getOpendate());
+		map.put("Status", "Request_Recieved");
+		map.put("Opendate", openDate);
 		map.put("CloseDate", service.getClosedate());
 		map.put("Description", service.getDescription());
 
 		return jdbcTemplate.update(query, map);
 	}
-
+	
 	@Override
 	public Service getServiceDetails(int id) {
 		// TODO Auto-generated method stub
-		String query = "select * from ServiceRequest where id=" + id;
-		return (Service) jdbc.query(query, new ServiceRowMapper());
+		String query = "select * from ServiceRequest where ID=" + id;
+		List<Service> service = jdbc.query(query, new ServiceRowMapper());
+		return service.get(0);
 	}
 
 	@Override
@@ -185,6 +173,8 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Override
 	public int updateService(Service service) {
 		// TODO Auto-generated method stub
+		System.out.println("status "+service.getStatus());
+		System.out.println("id "+service.getDescription());
 		String query = "update ServiceRequest set Status=:status where Id=:id";
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -197,12 +187,18 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Override
 	public int updateCloseDate(Service service) {
 		// TODO Auto-generated method stub
-		String query = "update ServiceRequest set CloseDate=:closedate where Id=:id";
+		System.out.println("close id "+service.getId());
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		Timestamp closeDate=timestamp;
+		Timestamp closeDate = timestamp;
+		System.out.println("closeDate: "+closeDate);
+
+		String query = "update ServiceRequest set Status=:status, CloseDate=:closedate where Id=:id";
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("id", service.getId());
-		map.put("CloseDate", closeDate);
+		map.put("closedate", closeDate);
+		map.put("status", service.getStatus());
+
 
 		return jdbcTemplate.update(query, map);
 	}
@@ -210,7 +206,9 @@ public class ServiceDAOImpl implements ServiceDAO {
 	@Override
 	public int deleteService(int id) {
 		// TODO Auto-generated method stub
-		String query = "delete from Activity where id=" + id;
+		
+		String query = "delete from ServiceRequest where id=?";
+		System.out.println("delete from ServiceRequest where ID="+id);
 
 		return jdbc.update(query, id);
 	}
@@ -220,7 +218,7 @@ public class ServiceDAOImpl implements ServiceDAO {
 		// TODO Auto-generated method stub
 		String query = "insert into Activity values(:ID,:ServiceRequestId,:UpdatedDate,:Update)";
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		Timestamp updateDate=timestamp;
+		Timestamp updateDate = timestamp;
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ID", activity.getId());
 		map.put("ServiceRequestId", activity.getSrid());

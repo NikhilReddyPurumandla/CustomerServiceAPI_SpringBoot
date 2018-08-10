@@ -22,6 +22,7 @@ public class AccountRowMapper implements RowMapper<Account>{
 		account.setZipCode(rs.getString("ZipCode"));
 		account.setRole(rs.getString("Role"));
 		account.setEmail(rs.getString("Email"));
+		account.setPhone(rs.getString("phone"));
 
 		return account;
 	}
